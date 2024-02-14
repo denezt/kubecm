@@ -28,7 +28,7 @@ def confirm_action():
     return confirmation in ['y', 'yes']
 
 # Will initial the vault for `kubecm`
-def initialize_k8s_conf(srcname):    
+def initialize_k8s_conf(srcname):
     vault_config_path = os.path.join(vault_dir, srcname)
     if os.path.isdir(vault_config_path):
         timestamp = datetime.now().strftime('%s')
@@ -74,7 +74,6 @@ def activate_k8s_config(srcname):
                 log_error("Missing or invalid configuration name")
         else:
             log_error("Backup is required before proceeding.")
-    
     config_file = os.path.join(vault_dir, srcname, "config")
     if os.path.isfile(config_file):
         shutil.copy(config_file, current_k8s_config)

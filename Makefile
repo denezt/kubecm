@@ -9,6 +9,9 @@ all: clean preinstall install test
 	@printf "Finished, running setup!\n"
 
 preinstall:
+	@printf "Installing Requirements...\n"
+	@command -v ssdeep || sudo apt install ssdeep -y
+	@sudo pip install -r requirements.txt
 	@test -d $(HOME)/$(CONF_VAULT) || mkdir -v $(HOME)/$(CONF_VAULT) # Initial creation of the vault
 
 clean:

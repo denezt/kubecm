@@ -4,6 +4,8 @@
 ### Prerequisities
 * GNU Make v4.3
 * Python v3.5+
+* PIP
+* ssdeep
 
 ### Purpose
 This project is for creating and managing a vault for configuration storage.
@@ -65,6 +67,19 @@ options:
   --config CONFIG      Configuration name
   --debug, --no-debug  Show debugging output
 </pre>
+
+
+``` sh
+# Execute this command to create the first backup to the `kubecm` vault
+kubecm --action backup --config aws
+```
+
+<pre>
+Success:	Generated config vault: /home/toor/kubecm_vault/aws
+Success:	Cloning /home/toor/.kube/config as /home/toor/kubecm_vault/aws/config
+Success:	Initialize for aws is Complete!
+</pre>
+
 
 
 ``` sh

@@ -7,6 +7,13 @@
 
 - Currently, in development
 
+## [1.0.0] - 12-02-2024
+
+### Added
+
+- Adding an initial backup feature for current configuration to store in vault
+
+
 ## [0.0.1] - 12-02-2024
 
 ### Added
@@ -17,4 +24,5 @@
 - View stored configurations
 - Activate configuration from vault
 
-[0.0.1]: https://github.com/denezt/kubecm
+[0.0.1]: https://github.com/denezt/kubecm/releases/tag/v0.0.1-alpha1
+

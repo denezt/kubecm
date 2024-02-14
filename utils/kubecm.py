@@ -4,6 +4,7 @@ import os
 import sys
 import shutil
 import subprocess
+import pydeep
 from datetime import datetime
 from argparse import ArgumentParser, BooleanOptionalAction
 
@@ -27,6 +28,19 @@ def confirm_action():
     confirmation = input("Proceed? [(y)/(n)]: ").lower()
     return confirmation in ['y', 'yes']
 
+def currentConfigInVault():
+    curr_config_stored = False
+    curr_config_hash = pydeep.hash_file(current_k8s_config)
+    for root, dirs, files in os.walk(vault_dir):
+        for file in files:
+            if file.startswith("config"):
+                vault_config_hash = pydeep.hash_file(os.path.join(root, file))
+                comparing_hash = pydeep.compare(curr_config_hash, vault_config_hash)
+                if comparing_hash:
+                    curr_config_stored = True
+                    break
+    return curr_config_stored
+
 # Will initial the vault for `kubecm`
 def initialize_k8s_conf(srcname):
     vault_config_path = os.path.join(vault_dir, srcname)
@@ -39,6 +53,21 @@ def initialize_k8s_conf(srcname):
     else:
         log_error(f"Config Source Directory {srcname} doesn't exist or no configuration was found")
 
+def createBackup(srcname):
+    # Ensure that the configuration source name is set
+    if srcname:        
+        config_vault_path = os.path.join(vault_dir, srcname)
+        # Create the vault directory
+        os.makedirs(config_vault_path, exist_ok=True)
+        log_success(f"Generated config vault: {config_vault_path}")
+        # Copies the current configuration to the vault directory
+        shutil.copy(current_k8s_config, config_vault_path)
+        log_success(f"Cloning {current_k8s_config} as {config_vault_path}/config")
+        # Initialize the new vault
+        initialize_k8s_conf(srcname)
+    else:
+        log_error("Missing configuration source name")
+
 def activate_k8s_config(srcname):
     # Ensure that the configuration source name is set
     if not srcname:
@@ -50,12 +79,8 @@ def activate_k8s_config(srcname):
                 metadata_file = os.path.join(root, file)
                 log_success(f"Found file {metadata_file}")
                 break
-    # We did not initiate a metadata file for `kubecm`
-    if not metadata_file:
-        log_error(f"Missing or invalid configuration source was given, {vault_name}/{srcname} must contain {metadata_file_prefix}.{srcname} file")
-
     # Create the Backup of current configuration to the vault
-    if os.path.isfile(current_k8s_config):
+    if os.path.isfile(current_k8s_config) and not currentConfigInVault():
         log_warning("First, we need to create a backup of the current configuration!")
         if confirm_action():
             current_config_name = input("Name the current configuration: ")
@@ -107,11 +132,13 @@ def createInitialConfig():
 
 def main():
     parser = ArgumentParser(description='Kubernetes Configuration Manager')
-    parser.add_argument('--action', required=True, help='Action to perform (init, activate, declare, view)')
+    parser.add_argument('--action', required=True, help='Action to perform (init, activate, backup, declare, view)')
     parser.add_argument('--config', help='Configuration name')
     parser.add_argument('--debug', action=BooleanOptionalAction, help='Show debugging output')
-    args = parser.parse_args()
-    if args.action == 'declare':
+    args = parser.parse_args()    
+    if args.action == 'backup':
+        createBackup(args.config)
+    elif args.action == 'declare':
         if not args.config:
             log_error("Configuration name is required for init action")
         initialize_k8s_conf(args.config)

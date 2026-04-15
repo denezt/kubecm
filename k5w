@@ -1,0 +1,38 @@
+#!/bin/bash
+
+
+
+execute(){
+	echo ""
+}
+
+extract_value(){
+	echo "$0" | cut -d'=' -f2 | cut -d':' -f2
+}
+
+help_menu(){
+cat <<EOF
+usage: $0 [-h] --action ACTION [--config CONFIG] [--debug | --no-debug]
+
+Kubernetes Configuration Manager
+
+options:
+  -h, --help           show this help message and exit
+  --action ACTION      Action to perform (init, activate, backup, declare,
+                       view)
+  --config CONFIG      Configuration name
+  --debug, --no-debug  Show debugging output
+EOF
+
+exit 0
+}
+
+for argv in $@;
+do
+	case $argv in
+		-h|--help) help_menu;;
+		--action=*|action:*) _action=$(extract_value $argv);;
+	esac
+done
+
+echo ${_action}

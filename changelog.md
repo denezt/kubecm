@@ -7,6 +7,12 @@
 
 - Currently, in development
 
+## [1.0.1] - 30-03-2026
+
+### Modified
+
+- Removed the PIP package management support for the UV tool. 
+
 ## [1.0.0] - 12-02-2024
 
 ### Added
@@ -25,4 +31,5 @@
 - Activate configuration from vault
 
 [0.0.1]: https://github.com/denezt/kubecm/releases/tag/v0.0.1-alpha1
+[1.0.0]: https://github.com/denezt/kubecm/releases/tag/v1.0.0
 
